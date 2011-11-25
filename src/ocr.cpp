@@ -207,7 +207,7 @@ void OCR::saveImages(int baseline)
 			// Search the larger rect enclosing the same letter
 			int iCount(1);
 
-#define DBG_EXPORT_BOXES
+//#define DBG_EXPORT_BOXES
 #ifdef DBG_EXPORT_BOXES
 			QImage dbgImage(m_img.copy());
 			QPen pen(Qt::blue);
