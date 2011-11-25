@@ -1,0 +1,217 @@
+** This file used to be maintained at http://osp.titanpad.com/21 **
+
+----------
+I N T R O
+----------
+Where are the sources?
+- git clone http://git.constantvzw.org/osp.git for read-only access
+- git clone git@git.constantvzw.org:osp.git for r/w access 
+(you need to first sent a public ssh key to Denis, Alex, Femke or Prince to actually be granted)
+
+Dans le dossier source, il y a les dossiers :
+
+    * build (empty)
+
+    * cmake
+
+    * potrace
+
+    * src
+
+
+Et il y a les fichiers :
+
+    * CMakeLists.txt
+
+    * Read me
+
+    * le script à lancer lui-même - par exemple genenem.sh ou universelse.sh ou fonzification.sh
+
+-------------
+I N S T A L L
+-------------
+- - - 
+Install Fonzie on GNU/Linux (Ubuntu 10.10)
+Synaptic Package Manager (in System > Administration) - Some of these packages may already installed on your system
+
+    * Search cmake - Mark for installation - Apply
+
+    * Search qt - Mark for installation all qt stuff (a lot!) - Apply
+
+    * Search cxx - Mark for installation - Apply
+
+    * Search freetype - Mark for installation - Apply
+
+    * Search sane - Mark for installation - Apply
+
+- - - 
+Install Fonzie on Mac
+
+Xcode
+- from your on your Mac OS X installation CDs/DVD
+ Insert the “Mac OS X Install Disk” and run the package...
+- or from http://developer.apple.com/technologies/xcode.html
+(burt here you need to be registered and log in with your Apple ID
+
+X11
+1. Insert the “Mac OS X Install Disk” and run the package named “Optional Installs”.
+2. At the software selection window expand the Applications category and click the check box beside X11 (and nothing else).
+3. Click Install to install X11.
+
+MacPorts
+http://www.macports.org/install.php
+
+Lancer un Terminal et installer sane, freetype, potrace puis Fonzie
+Passer en mode super user
+$ sudo su
+(enter your password)
+Installer cmake, qt, sane, freetype and potrace
+$ port install cmake
+$ port install qt?????
+$ port install sane-backends
+$ port install freetype
+$port install potrace
+
+
+-------
+P L A Y
+-------
+
+1 - - -
+cloner le git
+
+-pour les osp
+git clone git@git.constantvzw.org:osp.git
+
+-pour le "public"
+git clone http://git.constantvzw.org/osp.git
+
+- copier Fonzie dans son dossier source
+cd src
+cp -a ../wrk/osp/tools/fonzie . 
+
+- compiler Fonzie
+(si nous n'y sommes pas déjà, naviguer jusqu'au dossier sources)
+$cd src
+
+$cd fonzie
+- Créer un dossier build
+$ mkdir build
+- S'y rendre
+$cd build  
+- Preparer la compilation
+$ cmake ..
+- Compiler!
+$ make
+
+
+
+- - - Créer un dossier ufo vide
+
+- - - générer une fonte à partir d'une image (exemple)
+./fonzie i='/home/ludi/wrk/__erg/cours_4/george-petit.JPG' wc='/home/ludi/temp/Untitled1.ufo' cc=32 s=5 spec=0+0+0+0+100+100
+
+
+- - - Customiser les paramètres de vectorisation potrace
+voir http://potrace.sourceforge.net/#technical 
+> Technical documentation of the Potrace library API (for developers) [ps, pdf]. 
+
+default parameters for potrace :
+alphamax(1.2),
+turdsize(3),
+opticurve(1),
+opttolerance(0.6)
+
+
+> Retrouver tous les noms des paramètres dans tools/fonzie/src/names.h
+
+
+-----------------------------------------------------
+
+
+Ajuster les paramètres de vectorisation et les glyphes à générer
+dans fonzification.sh
+
+#!/bin/sh
+# Created by Pierre Marchand on 23/10/2010
+# Comments by Ludi Loiseau and Pierre Huyghebaert
+
+#// POTRACE
+#define OPTPT_ALPHAMAX "p_alphamax"
+#define OPTPT_TURDSIZE "p_turdsize"
+#define OPTPT_OPTICURVE "p_opticurve"
+#define OPTPT_OPTTOLERANCE "p_opttolerance"
+
+# à éditer selon mise à l'échelle de la grille et décalage
+SCALE=6.2
+OFFSET=190
+
+STYLE=$1
+STYLE2=$2
+
+# décider d'un dossier de travail + noter le path xxxxx
+# Empty.ufo est une fonte vide
+# templ (= working copy)
+# Fonziedfont = nom de la fonte
+
+# effacer la version précédente de la fonte
+rm -rf /Documents/Fonziedfont_.ufo/
+
+# Cree le fichier qui va accueillir les glyphes a partir de la fonte vide
+cp -a /Documents/Empty.ufo /Documents/Fonziedfont_.ufo
+
+# ./fonzie = à ajuster où est Fonzie
+# wc = working copy dans lequel Fonzie met des glyphes
+# r = fonte de référence = metrics
+# i = images - si stylistic set, rajouter Fonziedfont_${STYLE}${STYLE2}_U0000_1.jpg, Fonziedfont_${STYLE}${STYLE2}_U0000_2.jpg etc
+# cc = char code
+# o = offset
+# s = scale
+# cp = crop en dedans du bounding box
+# spec = specification de grille = marginpagetop+right+bottom+left+width+height
+# i1 = autre image etc
+./build/src/fonzie \
+p_alphamax=0.3 \
+p_turdsize=3 \
+p_opticurve=1 \
+p_opttolerance=0.6 \
+r=Fonziedfont/Fonziedfont-${STYLE}${STYLE2}.otf \
+i=scans/Fonziedfont_${STYLE}${STYLE2}_U0000_1.jpg \
+wc=Users/Xxxx/Documents/Fonziedfont_.ufo/ \
+cc=32 \
+o=-$OFFSET \
+s=$SCALE \
+cp=0 \
+spec=0+0+0+300+150+192 \
+i1=scans/Fonziedfont_${STYLE}${STYLE2}_U0080.jpg \
+wc1=Users/Xxxx/Documents/Fonziedfont_.ufo/ \
+cc1=160 \
+o1=-$OFFSET \
+s1=$SCALE \
+cp1=0 \
+spec1=0+0+0+300+150+192 \
+i2=scans/Fonziedfont_${STYLE}${STYLE2}_U2000.jpg \
+wc2=/Users/Xxxx/Documents/Fonziedfont_.ufo/ \
+cc2=8208 \
+o2=-$OFFSET \
+s2=$SCALE \
+cp2=0 \
+spec2=0+300+0+150+150+192 \
+
+echo "import fontforge" > script.py
+
+echo "font = fontforge.open(\"/Users/Xxxx/Documents/Fonziedfont_.ufo\")"  >> script.py
+echo "font.familyname = \"Fonziedfont\"" >> script.py
+echo "font.fontname = \"Fonziedfont-${STYLE}${STYLE2}\"" >> script.py
+echo "font.fullname = \"Fonziedfont ${STYLE} ${STYLE2}\"" >> script.py
+echo "font.weight = \"${STYLE} ${STYLE2}\"" >> script.py
+
+echo "font.appendSFNTName('English (US)', 'SubFamily' , font.weight)" >> script.py
+echo "font.generate(\"Fonziedfont${STYLE}${STYLE2}.otf\")" >> script.py
+
+# Call FontForge
+#/Applications/FontForge.app/Contents/MacOS/FontForge  -lang=py -script script.py  
+
+./fonzification.sh Bold
+
+
