@@ -73,9 +73,8 @@ OCR::OCR(const QString& datadir)
 }
 
 
-void OCR::loadImage(const QString &fn)
+void OCR::loadImage(const QImage& img)
 {
-	QImage img(fn);
 #if QT_VERSION < 0x040700
 	SetImage(img.bits(), img.width(), img.height(), img.depth() /8, img.bytesPerLine());
 #else
@@ -110,15 +109,19 @@ void OCR::saveImages(int baseline)
 	{
 		WERD_RES *word = page_res_it.word();
 		ROW_RES *row = page_res_it.row();
+
+		if (word_count)
+		{
+			GInfo gfn;
+			gfn.line = line;
+			ginfo << gfn;
+			++letterCount;
+		}
+
 		if(row->row != block)
 		{
 			++line;
 			block = row->row;
-		}
-		if (word_count)
-		{
-			ginfo << GInfo();
-			++letterCount;
 		}
 		int wlen = strlen(word->best_choice->unichar_lengths().string());
 		C_BLOB_LIST *blobs = word->word->cblob_list();
@@ -194,7 +197,15 @@ void OCR::saveImages(int baseline)
 		QChar c(tc.at(i));
 
 		// Pass the whole thing to the composer
-		Composer::Add(c, QPointF(x0[i], iHeight - x1[i]), ginfo.at(i).xheight, ginfo.at(i).line);
+		// space characters are not "boxed", we invent something here based on the previous char
+//		CS << "\n"<< i << c << x0[i] << x1[i] << y0[i] << y1[i] << "\n";
+		if(c.isSpace())
+		{
+			if(i > 0)
+				Composer::Add(c, QPointF(y0[i - 1], iHeight - x1[i - 1]), ginfo.at(i - 1).xheight, ginfo.at(i).line);
+		}
+		else
+			Composer::Add(c, QPointF(x0[i], iHeight - x1[i]), ginfo.at(i).xheight, ginfo.at(i).line);
 		CS<<c<<ginfo.at(i).line;
 
 		if(!iDict.contains(c))
@@ -258,7 +269,6 @@ void OCR::saveImages(int baseline)
 			QList<double> xheights;
 			QList<int> baselines;
 
-			{
 				for(int j(i), nSamples(0); j < result && nSamples < 255; ++j)
 				{
 					QChar c2(tc.at(j));
@@ -290,7 +300,7 @@ void OCR::saveImages(int baseline)
 
 					}
 				}
-			}
+//				ref.save(QString("ref_%1.png").arg(c.unicode()));
 			//			else
 			//			{
 			//				for(int j(i), nSamples(0); j < result && nSamples < 256; ++j)

@@ -38,26 +38,26 @@ UFOTemplate::UFOTemplate(const QString &name, const QString &dirPath)
 void UFOTemplate::makeUFO()
 {
 	QString features("table GDEF {} GDEF;");
-	QString fontinfo("<?xml version=\"1.0\" encoding=\"UTF-8\"?> \
-			<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\
-			 <plist version=\"1.0\"> <dict> \
-					<key>familyName</key> <string>%1</string> \
-					<key>styleName</key> <string>Medium</string> \
-					<key>copyright</key> <string>Created by Fonzie</string> \
-					<key>unitsPerEm</key> <integer>1000</integer> \
-					<key>ascender</key> <integer>800</integer> \
-					<key>descender</key> <integer>-200</integer> \
-					<key>italicAngle</key> <real>0</real> \
-					<key>note</key> <string>%2: Created.</string> \
-					<key>openTypeHeadCreated</key> <string>%3</string> \
-					<key>openTypeNameVersion</key> <string>Version 001.000</string> \
-					<key>postscriptFontName</key> <string>%4</string> \
-					<key>postscriptFullName</key> <string>%5</string> \
-					<key>postscriptWeightName</key> <string>Medium</string> \
-					<key>postscriptUnderlineThickness</key> <integer>50</integer> \
-					<key>postscriptUnderlinePosition</key> <integer>-100</integer> \
-					</dict> \
-					</plist>");
+	QString fontinfo("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\
+<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n\
+<plist version=\"1.0\">\n<dict>\n\
+	<key>familyName</key> <string>%1</string>\n \
+	<key>styleName</key> <string>Medium</string>\n \
+	<key>copyright</key> <string>Created by Fonzie</string>\n \
+	<key>unitsPerEm</key> <integer>1000</integer>\n \
+	<key>ascender</key> <integer>800</integer>\n \
+	<key>descender</key> <integer>-200</integer>\n \
+	<key>italicAngle</key> <real>0</real>\n \
+	<key>note</key> <string>%2: Created.</string>\n \
+	<key>openTypeHeadCreated</key> <string>%3</string>\n \
+	<key>openTypeNameVersion</key> <string>Version 001.000</string>\n \
+	<key>postscriptFontName</key> <string>%4</string>\n \
+	<key>postscriptFullName</key> <string>%5</string>\n \
+	<key>postscriptWeightName</key> <string>Medium</string>\n \
+	<key>postscriptUnderlineThickness</key> <integer>50</integer>\n \
+	<key>postscriptUnderlinePosition</key> <integer>-100</integer>\n \
+	</dict>\n \
+</plist>\n");
 	QString groups("<!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> <plist version=\"1.0\"> <dict> </dict> </plist>");
 	QString kerning(groups);
 	QString metainfo("<?xml version=\"1.0\" encoding=\"UTF-8\"?> <!DOCTYPE plist PUBLIC \"-//Apple Computer//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\"> <plist version=\"1.0\"> <dict> <key>creator</key> <string>org.constantvzw.OSP.Fonzie</string> <key>formatVersion</key> <integer>2</integer> </dict> </plist>");

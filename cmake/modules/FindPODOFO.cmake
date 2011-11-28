@@ -21,15 +21,9 @@ else (PODOFO_INCLUDE_DIR AND PODOFO_LIBRARY)
 endif (PODOFO_INCLUDE_DIR AND PODOFO_LIBRARY)
 
 if (PODOFO_FOUND)
-   if (NOT Potrace_FIND_QUIETLY)
       message(STATUS "Found podofo: ${PODOFO_LIBRARIES}")
-   endif (NOT Potrace_FIND_QUIETLY)
 else (PODOFO_FOUND)
-   if (NOT Potrace_FIND_QUIETLY)
-
- message(STATUS "don't find podofo")
-
-   endif (NOT Potrace_FIND_QUIETLY)
+	message(STATUS "don't find podofo")
 endif (PODOFO_FOUND)
 
 MARK_AS_ADVANCED(PODOFO_INCLUDE_DIR PODOFO_LIBRARIES PODOFO_LIBRARY)

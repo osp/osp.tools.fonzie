@@ -1,5 +1,5 @@
 /***************************************************************************
- *   Copyright (C) 2010 by Pierre Marchand   *
+ *   Copyright (C) 2011 by Pierre Marchand   *
  *   pierre@oep-h.com   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
@@ -18,40 +18,22 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef NAMES_H
-#define NAMES_H
+#ifndef BOOKSCANNER_H
+#define BOOKSCANNER_H
 
-#define OPTIMAGE	"i"
-#define OPTIMAGERES	"ires"
-#define OPTSCALE	"s"
-#define OPTSPEC		"spec"
-#define OPTWORKINGCOPY	"wc"
-#define OPTCOMPRESS	"comp"
-#define OPTCHARCODE	"cc"
-#define OPTOFFSET	"o"
-#define OPTCROP		"cp"
-#define OPTFONTREF	"r"
-#define OPTFONTREFSTRICT	"scrict"
-#define OPTFONTNAME	"n"
-#define OPTDIRECTORY	"d"
-#define OPTGENERATEOTF	"otf"
-#define OPTGENERATEUFO	"ufo"
-#define OPTXHEIGHT	"x"
-#define OPTPDF		"pdf"
+#include <SerialStream.h>
 
-// POTRACE
-#define OPTPT_ALPHAMAX "p_alphamax"
-#define OPTPT_TURDSIZE "p_turdsize"
-#define OPTPT_OPTICURVE "p_opticurve"
-#define OPTPT_OPTTOLERANCE "p_opttolerance"
+#include <QString>
 
-// TESSERACT
-#define OPTTESSDATA "tessdata"
-#define OPTBASELINE "bl"
+class BookScanner
+{
+public:
+	LibSerial::SerialStream serial;
 
-// BOOK SCANNER
-#define OPTCAPTURE "capture"
-#define OPTARDUINOSERIAL "arduino"
-#define OPTARDUINOSERIALBAUDRATE "arduino_br"
+	BookScanner(const QString& sfile, int baud);
+	~BookScanner(){}
 
-#endif // NAMES_H
+	void TurnPage();
+};
+
+#endif // BOOKSCANNER_H

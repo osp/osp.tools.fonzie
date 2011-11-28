@@ -33,13 +33,20 @@ Composer* Composer::that()
 	return instance;
 }
 
+int Composer::NewPage()
+{
+	PosList p;
+	that()->pl.append(p);
+	return that()->pl.count();
+}
+
 void Composer::Add(QChar ccode, QPointF pos, double sizeHint, unsigned int line)
 {
 	Pos p(ccode, pos, sizeHint, line);
-	that()->pl.append(p);
+	that()->pl.last().append(p);
 }
 
-const Composer::PosList& Composer::GetList()
+const QList<Composer::PosList>& Composer::GetList()
 {
 	return that()->pl;
 }

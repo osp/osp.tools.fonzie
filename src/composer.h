@@ -55,11 +55,12 @@ public:
 	typedef Pos_ Pos;
 	typedef QList<Pos> PosList;
 
+	static int NewPage();
 	static void Add(QChar ccode, QPointF pos, double sizeHint, unsigned int line);
-	static const PosList& GetList();
+	static const QList<PosList>& GetList();
 
 private:
-	PosList pl;
+	QList<PosList> pl;
 };
 
 #endif // COMPOSER_H

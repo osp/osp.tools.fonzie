@@ -62,7 +62,7 @@ class OCR : public tesseract::TessBaseAPI
 public:
     OCR(const QString& datadir);
 
-    void loadImage(const QString& fn);
+    void loadImage(const QImage& img);
     void saveImages(int baseline = 0);
 
     QMap<QChar, QImage> iDict;

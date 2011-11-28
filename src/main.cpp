@@ -30,6 +30,7 @@
 #include "magicmetrics.h"
 #include "ufotemplate.h"
 #include "document.h"
+#include "composer.h"
 
 
 #define WITH_TESSERACT
@@ -42,6 +43,16 @@
 #include <QMap>
 #include <QFile>
 #include <QDir>
+
+#define WITH_CAPTURE
+#ifdef WITH_CAPTURE
+#include "orm.h"
+#endif
+
+#define WITH_BOOK_SCANNER
+#ifdef WITH_BOOK_SCANNER
+#include "bookscanner.h"
+#endif
 
 
 int main(int ac, char ** av)
@@ -71,13 +82,54 @@ int main(int ac, char ** av)
 		QList<GlyphTrace*> allGlyphs;
 
 		int iCount(opt.Count(OPTIMAGE));
-qDebug()<<"Images Count: "<<iCount;
-		QList<QChar> processed;
+#ifdef WITH_CAPTURE
+		ORM * orm;
+		bool hasORM(false);
+		if(opt.contains(OPTCAPTURE))
+		{
+			iCount = opt.toInt(OPTCAPTURE);
+			orm = new ORM;
+			hasORM = true;
+		}
+		ORM::CameraSelect camsel(ORM::Left);
+#endif
 
+		qDebug()<<"Images Count: "<<iCount;
+		QList<QChar> processed;
+#ifdef WITH_BOOK_SCANNER
+		BookScanner * bs = 0;
+		if(opt.contains(OPTARDUINOSERIAL))
+		{
+			int asbr = opt.contains(OPTARDUINOSERIALBAUDRATE) ? opt.toInt(OPTARDUINOSERIALBAUDRATE) : 0;
+			bs = new BookScanner(opt.value(OPTARDUINOSERIAL), asbr);
+		}
+#endif
 
 		for(int ic(0); ic < iCount; ++ic)
 		{
-			QString image(opt.toString(QString(OPTIMAGE), ic));
+			Composer::NewPage();
+#ifdef WITH_BOOK_SCANNER
+			if(bs)
+				bs->TurnPage();
+#endif
+#ifdef WITH_CAPTURE
+			QImage image;
+			if(hasORM)
+			{
+				image = orm->TakePicture(camsel);
+				if(camsel == ORM::Left)
+					camsel = ORM::Right;
+				else
+					camsel = ORM::Left;
+			}
+			else
+				image = QImage(opt.toString(QString(OPTIMAGE), ic));
+
+			qDebug()<<image.size();
+			image.save(QString("capture_%1.png").arg(ic));
+#else
+			QImage image(opt.toString(QString(OPTIMAGE), ic));
+#endif
 			OCR ocr(opt.value(OPTTESSDATA));
 			bool hasXHeight(false);
 			double optXHeight;
@@ -87,6 +139,7 @@ qDebug()<<"Images Count: "<<iCount;
 				hasXHeight = true;
 			}
 			ocr.loadImage(image);
+			qDebug()<<"Image loaded";
 			ocr.saveImages();
 			foreach(const QChar& c, ocr.iDict.keys())
 			{
@@ -102,7 +155,7 @@ qDebug()<<"Images Count: "<<iCount;
 				QString hexcode(QString::number(charcode ,16).toUpper());
 				QString glifname(QString("uni%1").arg(hexcode,4,'0'));
 
-				ocr.iDict.value(c).save(QString("%1.png").arg(glifname));
+				//ocr.iDict.value(c).save(QString("%1.png").arg(glifname));
 
 				GlyphTrace* gt = new GlyphTrace(ocr.iDict.value(c), ptOpt);
 				if(hasXHeight)
@@ -147,10 +200,10 @@ qDebug()<<"Images Count: "<<iCount;
 		{
 			QString fontDir(".");
 			QString fontName("NN_");
-			if(opt.contains("d"))
-				fontDir = opt.value("d");
-			if(opt.contains("n"))
-				fontName = opt.value("n");
+			if(opt.contains(OPTDIRECTORY))
+				fontDir = opt.value(OPTDIRECTORY);
+			if(opt.contains(OPTFONTNAME))
+				fontName = opt.value(OPTFONTNAME);
 			UFOTemplate ut(fontName, fontDir);
 			fu = new FontUpdate(ut.path());
 		}
@@ -174,6 +227,10 @@ qDebug()<<"Images Count: "<<iCount;
 			fu->ClearWC();
 		delete fu;
 		delete mm;
+#ifdef WITH_CAPTURE
+		if(hasORM)
+			delete orm;
+#endif
 	}
 #else
 	if(app.argc() > 1)
@@ -427,10 +484,10 @@ qDebug()<<"Images Count: "<<iCount;
 		{
 			QString fontDir(".");
 			QString fontName("NN_");
-			if(opt.contains("d"))
-				fontDir = opt.value("d");
-			if(opt.contains("n"))
-				fontName = opt.value("n");
+			if(opt.contains(OPTDIRECTORY))
+				fontDir = opt.value(OPTDIRECTORY);
+			if(opt.contains(OPTFONTNAME))
+				fontName = opt.value(OPTFONTNAME);
 			UFOTemplate ut(fontName, fontDir);
 			fu = new FontUpdate(ut.path());
 		}

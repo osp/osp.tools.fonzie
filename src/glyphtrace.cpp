@@ -25,12 +25,23 @@
 #include <QTransform>
 
 #include <cstdio>
+#include <cmath>
 
 #define DEFAULTXADVANCE 1000.0
+#define MINIMUMIMAGEAREA 10000.0
 
 GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 {
-	bitmap = toBitmap(image);
+	double iHeight(image.height());
+	double iWidth(image.width());
+	if(iHeight * iWidth > MINIMUMIMAGEAREA)
+		iScale = 1.0;
+	else
+	{
+		iScale = qMax(sqrt(MINIMUMIMAGEAREA / (iHeight * iWidth)), 0.000001);
+	}
+//	qDebug()<<iWidth<<iHeight<<iScale<< (iWidth * iScale) << (iHeight * iScale);
+	bitmap = toBitmap(image.scaled(iWidth * iScale, iHeight * iScale, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
 	advance = DEFAULTXADVANCE;
 	tx = ty = 0;
 	potrace_param_t * par = potrace_param_default();
@@ -149,7 +160,7 @@ bool GlyphTrace::Glyph()
 
 QPointF GlyphTrace::GetPoint(potrace_dpoint_t c)
 {
-	QPointF ret(c.x, c.y);
+	QPointF ret(c.x / iScale, c.y / iScale);
 	return ret;
 }
 

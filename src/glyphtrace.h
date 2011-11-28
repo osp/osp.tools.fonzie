@@ -44,6 +44,8 @@ class GlyphTrace : public QObject
  void storeCurve(potrace_curve_t* c);
 
  potrace_dpoint_t  curpoint;
+ double iScale;
+
  QPainterPath gstore;
  QImage bitmap;
  QString outline;

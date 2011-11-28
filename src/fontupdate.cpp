@@ -121,7 +121,13 @@ QString FontUpdate::Commit()
 #ifdef WITH_FONTFORGE
 
 	FF_Struct * ff(newFF());
-	QFile domfile(workingcopy + "/fontinfo.plist");
+	QFileInfo fontinfo(workingcopy + QString("/fontinfo.plist"));
+	QDir wkc(workingcopy);
+	QString fabsp(wkc.absoluteFilePath("fontinfo.plist"));
+	QString wabsp(wkc.absolutePath());
+	wkc.cdUp();
+	QString ffo(wkc.absolutePath());
+	QFile domfile(fabsp);
 	QDomDocument dom;
 	QString fname;
 	if (domfile.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -144,9 +150,10 @@ QString FontUpdate::Commit()
 				}
 			}
 		}
+		domfile.close();
 	}
 	QString OTFName("%1.otf");
-	ff->generate(workingcopy.toUtf8().data(), OTFName.arg(fname).toUtf8().data());
+	ff->generate(wabsp.toUtf8().data(), OTFName.arg(fname).toUtf8().data());
 	QFileInfo ret( OTFName.arg(fname));
 	return ret.absoluteFilePath();
 

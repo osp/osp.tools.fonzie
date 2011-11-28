@@ -102,15 +102,18 @@ Document::Document(const QString& ff):
 void Document::write(const QString &output, double width, double height)
 {
 
-	const Composer::PosList& pl(Composer::GetList());
+	const QList<Composer::PosList>& pl(Composer::GetList());
 
 	unsigned int startC = 0xFFFF;
 	unsigned int endC = 0;
-	foreach(const Composer::Pos& p, pl)
+	foreach(const Composer::PosList& l, pl)
 	{
-		QChar c(p.c);
-		startC = qMin(uint(c.unicode()), startC);
-		endC = qMax(uint(c.unicode()), endC);
+		foreach(const Composer::Pos& p, l)
+		{
+			QChar c(p.c);
+			startC = qMin(uint(c.unicode()), startC);
+			endC = qMax(uint(c.unicode()), endC);
+		}
 	}
 
 	PoDoFo::PdfMemDocument *targetDoc = new PoDoFo::PdfMemDocument;
@@ -138,44 +141,50 @@ void Document::write(const QString &output, double width, double height)
 	//	PoDoFo::PdfFont * font(PoDoFo::PdfFontFactory::CreateFontObject(metrics, PoDoFo::ePdfFont_Embedded, enc, &(targetDoc->GetObjects())));
 
 	PoDoFo::PdfFont * font(new FonzieCID(metrics, enc, &(targetDoc->GetObjects()), true, face));
-	PoDoFo::PdfPage * newpage(targetDoc->CreatePage ( PoDoFo::PdfRect ( 0.0, 0.0, width, height ) ));
 	PoDoFo::PdfPainter *painter(new PoDoFo::PdfPainter);
 
-	painter->SetPage(newpage);
-	painter->SetFont(font);
+
 	//	painter->SetTransformationMatrix(1,0,0,-1,0,-height);
-	unsigned int line(0);
-	QPointF pos;
-	QString str;
-	foreach(const Composer::Pos& p, pl)
+	foreach(const Composer::PosList& l, pl)
 	{
-		if(p.l != line)
+		PoDoFo::PdfPage * newpage(targetDoc->CreatePage ( PoDoFo::PdfRect ( 0.0, 0.0, width, height ) ));
+		painter->SetPage(newpage);
+		painter->SetFont(font);
+		unsigned int line(0);
+		QPointF pos;
+		QString str;
+		foreach(const Composer::Pos& p, l)
 		{
-			if(!str.isEmpty())
+			//		qDebug( )<<p.c<<p.p;
+			if(p.l != line)
 			{
-				PoDoFo::pdf_utf8* us = reinterpret_cast<PoDoFo::pdf_utf8*>( str.toUtf8().data() );
-				PoDoFo::PdfString s(us);
-				painter->DrawText(pos.x(),height - pos.y(),s);
-				qDebug( )<<str<<pos.x() << height - pos.y();
-				str.clear();
+				if(!str.isEmpty())
+				{
+					PoDoFo::pdf_utf8* us = reinterpret_cast<PoDoFo::pdf_utf8*>( str.toUtf8().data() );
+					PoDoFo::PdfString s(us);
+					painter->DrawText(pos.x(),height - pos.y(),s);
+					qDebug( )<<str<<pos.x() << height - pos.y();
+					str.clear();
+				}
+				font->SetFontSize(p.sh);
+				pos = p.p;
+				line = p.l;
 			}
-			font->SetFontSize(p.sh);
-			pos = p.p;
-			line = p.l;
+			//		else
+			{
+				str.append(p.c);
+			}
 		}
-//		else
+		if(!str.isEmpty())
 		{
-			str.append(p.c);
+			PoDoFo::pdf_utf8* us = reinterpret_cast<PoDoFo::pdf_utf8*>( str.toUtf8().data() );
+			PoDoFo::PdfString s(us);
+			painter->DrawText(pos.x(),height - pos.y(),s);
+			str.clear();
 		}
+
+		painter->FinishPage();
 	}
-	if(!str.isEmpty())
-	{
-		PoDoFo::pdf_utf8* us = reinterpret_cast<PoDoFo::pdf_utf8*>( str.toUtf8().data() );
-		PoDoFo::PdfString s(us);
-		painter->DrawText(pos.x(),height - pos.y(),s);
-		str.clear();
-	}
-	painter->FinishPage();
 	delete painter;
 
 	targetDoc->SetWriteMode(PoDoFo::ePdfWriteMode_Clean);
