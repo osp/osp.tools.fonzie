@@ -63,9 +63,9 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 		pbm.dy += 1;
 	pbm.map = new potrace_word[pbm.h * pbm.dy * potrace_N];
 	memset(pbm.map, 0, sizeof(potrace_word) * pbm.h * pbm.dy * potrace_N);
-	for(unsigned int i=0; i < pbm.h; ++i)
+	for(unsigned short i=0; i < pbm.h; ++i)
 	{
-		for(unsigned int j=0; j < pbm.w; ++j)
+		for(unsigned short j=0; j < pbm.w; ++j)
 		{
 			if(bitmap.pixelIndex(j,i) > 0)
 				potrace_clear_pixel(&pbm, j, (pbm.h - 1) - i);
