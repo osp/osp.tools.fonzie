@@ -33,7 +33,7 @@
 #include "composer.h"
 
 
-#define WITH_TESSERACT
+//#define WITH_TESSERACT
 #ifdef WITH_TESSERACT
 #include "ocr.h"
 #endif
@@ -44,12 +44,12 @@
 #include <QFile>
 #include <QDir>
 
-#define WITH_CAPTURE
+//#define WITH_CAPTURE
 #ifdef WITH_CAPTURE
 #include "orm.h"
 #endif
 
-#define WITH_BOOK_SCANNER
+//#define WITH_BOOK_SCANNER
 #ifdef WITH_BOOK_SCANNER
 #include "bookscanner.h"
 #endif
