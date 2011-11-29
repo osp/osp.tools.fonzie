@@ -27,7 +27,7 @@ extern "C" {
 
 typedef struct
 {
-	void (*generate)(char*, char*);
+	int (*generate)(char*, char*);
 } FF_Struct;
 
 extern FF_Struct* newFF();

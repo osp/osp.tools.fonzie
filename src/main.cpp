@@ -33,7 +33,7 @@
 #include "composer.h"
 
 
-//#define WITH_TESSERACT
+#define WITH_TESSERACT
 #ifdef WITH_TESSERACT
 #include "ocr.h"
 #endif
@@ -44,12 +44,12 @@
 #include <QFile>
 #include <QDir>
 
-//#define WITH_CAPTURE
+#define WITH_CAPTURE
 #ifdef WITH_CAPTURE
 #include "orm.h"
 #endif
 
-//#define WITH_BOOK_SCANNER
+#define WITH_BOOK_SCANNER
 #ifdef WITH_BOOK_SCANNER
 #include "bookscanner.h"
 #endif
@@ -88,7 +88,7 @@ int main(int ac, char ** av)
 		if(opt.contains(OPTCAPTURE))
 		{
 			iCount = opt.toInt(OPTCAPTURE);
-			orm = new ORM;
+			orm = new ORM(opt.value(OPTCAMLEFT), opt.value(OPTCAMRIGHT));
 			hasORM = true;
 		}
 		ORM::CameraSelect camsel(ORM::Left);
@@ -116,6 +116,7 @@ int main(int ac, char ** av)
 			QImage image;
 			if(hasORM)
 			{
+				qDebug()<<"CAPTURE FROM" << (camsel == ORM::Left ? "LEFT" : "RIGHT");
 				image = orm->TakePicture(camsel);
 				if(camsel == ORM::Left)
 					camsel = ORM::Right;
@@ -194,6 +195,7 @@ int main(int ac, char ** av)
 		if(opt.contains("wc"))
 		{
 			fu = new FontUpdate(opt.value("wc"));
+			fu->ClearWC();
 
 		}
 		else

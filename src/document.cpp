@@ -22,6 +22,7 @@
 #include <QDebug>
 #include <QByteArray>
 #include <QList>
+#include <QFile>
 #include "document.h"
 #include "composer.h"
 
@@ -87,8 +88,8 @@ public:
 		std::string rsData;
 		dfont->ToString(rsData);
 		qDebug()<<rsData.c_str();
-		//		dfont->GetDictionary().AddKey("CIDToGIDMap", stream->Reference());
-		dfont->GetDictionary().AddKey("CIDToGIDMap", stream);
+		dfont->GetDictionary().AddKey("CIDToGIDMap", PoDoFo::PdfName("Identity"));
+//		dfont->GetDictionary().AddKey("CIDToGIDMap", stream->Reference());
 
 	}
 };
@@ -120,18 +121,22 @@ void Document::write(const QString &output, double width, double height)
 
 	FT_Face face;
 	FT_Error      ft_error;
-	const char * fn (fontfile.toUtf8().constData());
-	ft_error = FT_New_Face(targetDoc->GetFontLibrary(), fn, 0, &face);
+	FT_Library ftlib = targetDoc->GetFontLibrary();
+	//const char * fn (fontfile.toUtf8().constData());
+	qDebug()<<fontfile<< QFile::exists(fontfile);
+
+	ft_error = FT_New_Face(ftlib, fontfile.toUtf8().constData() , 0, &face);
 	if ( ft_error )
 	{
-		for(int i(0); i <100; i++)
-		{
-			ft_error = FT_New_Face(targetDoc->GetFontLibrary(), fn, 0, &face);
-			if(ft_error == 0)
-				break;
-		}
-		if(ft_error)
-			qDebug() << "Error loading face [" << fontfile <<"]"<<ft_error;
+		//		for(int i(0); i <100; i++)
+		//		{
+		//			ft_error = FT_New_Face(ftlib, fn, 0, &face);
+		//			qDebug()<<"FTERROR"<<ft_error;
+		//			if(ft_error == 0)
+		//				break;
+		//		}
+		//		if(ft_error)
+		qDebug() << "Error loading face [" << fontfile <<"]"<<ft_error;
 	}
 	PoDoFo::PdfEncoding * enc(new PoDoFo::PdfIdentityEncoding(startC,endC));
 	//	Doesnt work for opentype fonts

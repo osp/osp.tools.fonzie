@@ -34,6 +34,7 @@ public:
 	~BookScanner(){}
 
 	void TurnPage();
+	void clearSerial();
 };
 
 #endif // BOOKSCANNER_H

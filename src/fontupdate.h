@@ -34,7 +34,7 @@ class FontUpdate
 public:
 	FontUpdate( const QString& wc);
 	void Do(GlyphTrace* gt);
-	void ClearWC();
+	void ClearWC(bool preserveDir = false);
 	QString Commit();
 };
 

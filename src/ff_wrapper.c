@@ -30,17 +30,19 @@ Although I cant see how it will work out as I finally need to include this wrapp
 
 #include "ff_wrapper.h"
 
-void generateFontOTF(char* src, char* trgt)
+int generateFontOTF(char* src, char* trgt)
 {
+	int ret = 0;
 //	struct fontdict * fd = ReadPSFont(src);
 //	SplineFont * sf = SplineFontFromPSFont(fd);
 	SplineFont * sf = SFReadUFO(src, 0);
 	EncMap * a_encmap = EncMapFromEncoding(sf, FindOrMakeEncoding("UnicodeBmp"));
-	WriteTTFFont(trgt, sf, ff_otf, NULL, bf_none, 0, a_encmap, ly_fore);
+	ret = WriteTTFFont(trgt, sf, ff_otf, NULL, bf_none, 0, a_encmap, ly_fore);
 
 	EncMapFree(a_encmap);
 	SplineFontFree(sf);
 //	PSFontFree(fd);
+	return ret;
 }
 
 FF_Struct* newFF()

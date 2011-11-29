@@ -23,6 +23,8 @@
 
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
+#include <QFileInfoList>
 #include <QString>
 
 class UFOTemplate
@@ -36,6 +38,7 @@ class UFOTemplate
 public:
 	UFOTemplate(const QString& name, const QString& dirPath);
 
+	bool removeDir(const QString &dirName);
 	QString  path() const;
 };
 

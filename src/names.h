@@ -51,6 +51,8 @@
 
 // BOOK SCANNER
 #define OPTCAPTURE "capture"
+#define OPTCAMRIGHT "cr"
+#define OPTCAMLEFT "cl"
 #define OPTARDUINOSERIAL "arduino"
 #define OPTARDUINOSERIALBAUDRATE "arduino_br"
 

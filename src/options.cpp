@@ -51,17 +51,17 @@ Options::Options(const QStringList& opt)
 			insert(QString(OPTIMAGE) + QString::number(i), images.at(i));
 		}
 	}
-	else
-	{
-		QDir dir(".");
-		QStringList globbed(dir.entryList(images));
-		for(int i(0); i < globbed.count(); ++i)
-		{
-			insert(QString(OPTIMAGE) + QString::number(i), globbed.at(i));
-			qDebug()<<QString(OPTIMAGE) + QString::number(i)<<" => "<<globbed.at(i);
-		}
+//	else
+//	{
+//		QDir dir(".");
+//		QStringList globbed(dir.entryList(images));
+//		for(int i(0); i < globbed.count(); ++i)
+//		{
+//			insert(QString(OPTIMAGE) + QString::number(i), globbed.at(i));
+//			qDebug()<<QString(OPTIMAGE) + QString::number(i)<<" => "<<globbed.at(i);
+//		}
 
-	}
+//	}
 }
 
 bool Options::toBool(const QString &s, int n)

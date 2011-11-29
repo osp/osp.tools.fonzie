@@ -88,7 +88,8 @@ void OCR::saveImages(int baseline)
 {
 	int bl(baseline == 0 ? m_img.height() : baseline );
 	char * resultText = GetUTF8Text();
-//	QString exportString(QString::fromUtf8(resultText));
+	QString exportString(QString::fromUtf8(resultText));
+	CS << exportString;
 //	qDebug()<<"OCR:";
 //	qDebug()<<exportString;
 //	Recognize(0);

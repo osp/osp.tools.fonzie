@@ -18,12 +18,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#define BS_TURNPAGE_COMMAND 1
+#define BS_COMMAND_TURN_1 "turn 1"
+#define BS_COMMAND_TURN_0 "turn 0"
+#define BS_COMMAND_SERVO "servo "
 #define BS_TURNPAGE_COMPLETED 1
 
 #include "bookscanner.h"
 
 #include <QMap>
+#include <QDebug>
+#include <QString>
 
 
 BookScanner::BookScanner(const QString& sfile, int baud)
@@ -56,23 +60,38 @@ BookScanner::BookScanner(const QString& sfile, int baud)
 	serial.SetCharSize(LibSerial::SerialStreamBuf::CHAR_SIZE_8);
 }
 
+void BookScanner::clearSerial()
+{
+	int length;
+	char * buffer;
+	serial.seekg (0, std::ios::end);
+	length = serial.tellg();
+	serial.seekg (0, std::ios::beg);
+	if(length > 0)
+	{
+	// allocate memory:
+	buffer = new char [length];
+
+	// read data as a block:
+	serial.read (buffer,length);
+	delete[] buffer;
+	}
+}
 
 void BookScanner::TurnPage()
 {
 	if(!serial.IsOpen())
 		return;
 
-	serial << BS_TURNPAGE_COMMAND;
-	int ret(0);
-	for(int i(0); i < 30; ++i)
+	// serial << BS_COMMAND_TURN_1;
+	for(int i(10); i < 360; ++i)
 	{
-		if(serial.good())
-		{
-			serial >> ret;
-			if(ret == BS_TURNPAGE_COMPLETED)
-				break;
-		}
 
-		sleep(1);
+//		clearSerial();
+		QString c(BS_COMMAND_SERVO + QString::number(i) + QString("\n"));
+//		serial << BS_COMMAND_SERVO << i << std::endl;
+		serial.write(c.toAscii().data(), c.length());
+
 	}
+
 }

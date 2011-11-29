@@ -86,7 +86,7 @@ void FontUpdate::Do(GlyphTrace* gt)
 	}
 }
 
-void FontUpdate::ClearWC()
+void FontUpdate::ClearWC(bool preserveDir)
 {
 
 	QFileInfo fd(workingcopy);
@@ -112,7 +112,8 @@ void FontUpdate::ClearWC()
 			if(dn.isDir())
 				d.rmdir(dn.fileName());
 		}
-		p.rmdir(fd.fileName());
+		if(!preserveDir)
+			p.rmdir(fd.fileName());
 	}
 }
 
@@ -153,7 +154,8 @@ QString FontUpdate::Commit()
 		domfile.close();
 	}
 	QString OTFName("%1.otf");
-	ff->generate(wabsp.toUtf8().data(), OTFName.arg(fname).toUtf8().data());
+	int ffret = ff->generate(wabsp.toUtf8().data(), OTFName.arg(fname).toUtf8().data());
+	qDebug()<<"FFRET"<<ffret;
 	QFileInfo ret( OTFName.arg(fname));
 	return ret.absoluteFilePath();
 
