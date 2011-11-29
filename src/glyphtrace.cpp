@@ -20,6 +20,7 @@
 
 #include "glyphtrace.h"
 #include "potrace_util.h"
+#include "bitmap.h"
 
 #include <iostream>
 #include <QTransform>
@@ -57,28 +58,31 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 	par->opticurve = opt.opticurve;
 	par->opttolerance = opt.opttolerance;
 
-	potrace_bitmap_t pbm;
-	pbm.h = bitmap.height();
-	pbm.w = bitmap.width();
-	pbm.dy = (pbm.w / potrace_N);
-	if(pbm.w % potrace_N)
-		pbm.dy += 1;
-	pbm.map = new potrace_word[pbm.h * pbm.dy * potrace_N];
-	qDebug()<<"N"<<potrace_N<<(pbm.h * pbm.dy * potrace_N)<<(pbm.h * pbm.dy);
-	memset(pbm.map, 0, sizeof(potrace_word) * pbm.h * pbm.dy * potrace_N);
-	for(unsigned short i=0; i < pbm.h; ++i)
+	potrace_bitmap_t * pbm(bm_new(bitmap.width(), bitmap.height()));
+	bm_clear(pbm, 0);
+//	pbm.h = bitmap.height();
+//	pbm.w = bitmap.width();
+////	pbm.dy = (pbm.w / potrace_N);
+//	pbm.dy = (pbm.w + BM_WORDBITS - 1) / BM_WORDBITS;
+//	int mapSize(pbm.h * pbm.dy * BM_WORDSIZE);
+//	if(pbm.w % potrace_N)
+//		pbm.dy += 1;
+//	pbm.map = new potrace_word[mapSize];
+//	qDebug()<<"N"<<BM_WORDBITS<<BM_WORDSIZE<<mapSize;
+//	memset(pbm.map, 0, mapSize);
+	for(unsigned short i=0; i < pbm->h; ++i)
 	{
-		for(unsigned short j=0; j < pbm.w; ++j)
+		for(unsigned short j=0; j < pbm->w; ++j)
 		{
 			if(bitmap.pixelIndex(j,i) > 0)
-				potrace_clear_pixel(&pbm, j, (pbm.h - 1) - i);
+				potrace_clear_pixel(pbm, j, (pbm->h - 1) - i);
 			else
-				potrace_set_pixel(&pbm, j, (pbm.h - 1) - i);
+				potrace_set_pixel(pbm, j, (pbm->h - 1) - i);
 		}
 	}
 //	image.save(QString("%1_image.png").arg(int(this)));
 //	bitmap.save(QString("%1_bitmap.png").arg(int(this)));
-	potrace_state_t *pState = potrace_trace(par, &pbm);
+	potrace_state_t *pState = potrace_trace(par, pbm);
 	potrace_path_t * p = pState->plist;
 	while(p != 0)
 	{
@@ -87,7 +91,8 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 	}
 	potrace_state_free(pState);
 	potrace_param_free(par);
-	delete[] pbm.map;
+	bm_free(pbm);
+//	delete[] pbm.map;
 	bitmap = QImage();
 }
 
