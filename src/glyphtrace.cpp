@@ -27,6 +27,8 @@
 #include <cstdio>
 #include <cmath>
 
+#include <QDebug>
+
 #define DEFAULTXADVANCE 1000.0
 #define MINIMUMIMAGEAREA 10000.0
 
@@ -62,6 +64,7 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 	if(pbm.w % potrace_N)
 		pbm.dy += 1;
 	pbm.map = new potrace_word[pbm.h * pbm.dy * potrace_N];
+	qDebug()<<"N"<<potrace_N<<(pbm.h * pbm.dy * potrace_N)<<(pbm.h * pbm.dy);
 	memset(pbm.map, 0, sizeof(potrace_word) * pbm.h * pbm.dy * potrace_N);
 	for(unsigned short i=0; i < pbm.h; ++i)
 	{
