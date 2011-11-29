@@ -88,6 +88,8 @@ public:
 		std::string rsData;
 		dfont->ToString(rsData);
 		qDebug()<<rsData.c_str();
+		// to be honest, I don't get it. i just suppose PDF readers don't read this and directly read the TTF cmap
+		// Which means I'm not finished with fixing the CIDToGIDMap
 		dfont->GetDictionary().AddKey("CIDToGIDMap", PoDoFo::PdfName("Identity"));
 //		dfont->GetDictionary().AddKey("CIDToGIDMap", stream->Reference());
 
