@@ -69,7 +69,7 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 //			else
 //				potrace_set_pixel(pbm, j, (pbm->h - 1) - i);
 			if(bitmap.pixelIndex(j,i) == 0)
-				potrace_set_pixel(pbm, j, (pbm->h - 1) - i);
+				BM_SET(pbm, j, (pbm->h - 1) - i);
 		}
 	}
 //	image.save(QString("%1_image.png").arg(int(this)));
