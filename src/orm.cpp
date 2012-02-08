@@ -29,6 +29,12 @@
 
 #include <QDebug>
 
+extern "C"
+{
+	struct PTPParams;
+	uint16_t ptp_chdk_exec_lua(PTPParams* params, char *script, uint32_t *ret);
+}
+
 ORM::ORM(const QString& leftPort, const QString& rightPort)
 {
 	context = gp_context_new();
@@ -87,6 +93,8 @@ ORM::~ORM()
 
 QImage ORM::TakePicture(ORM::CameraSelect camsel)
 {
+	const char *ptr;
+	long unsigned int size;
 	Camera *camera;
 	if(camsel == Left)
 		camera = cameraLeft;
@@ -100,15 +108,19 @@ QImage ORM::TakePicture(ORM::CameraSelect camsel)
 	strcpy(camera_file_path.folder, "/");
 	strcpy(camera_file_path.name, "foo.jpg");
 	gp_camera_capture(camera, GP_CAPTURE_IMAGE, &camera_file_path, context);
-	fd = open("test.jpg", O_CREAT | O_WRONLY, 0644);
-	gp_file_new_from_fd(&file, fd);
+//	fd = open("test.jpg", O_CREAT | O_WRONLY, 0644);
+//	gp_file_new_from_fd(&file, fd);
+	gp_file_new(&file);
 	gp_camera_file_get(camera, camera_file_path.folder, camera_file_path.name, GP_FILE_TYPE_NORMAL, file, context);
+	gp_file_get_data_and_size (file, &ptr, &size);
+
 	gp_camera_file_delete(camera, camera_file_path.folder, camera_file_path.name, context);
+
+//	close(fd);
+	QImage ret = QImage::fromData(reinterpret_cast<const unsigned char*>(ptr), size).copy();
 	gp_file_free(file);
-
-	close(fd);
-
-	return QImage(QString("test.jpg"));
+	return ret;
+//	return QImage(QString("test.jpg"));
 
 }
 

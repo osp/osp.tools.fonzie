@@ -174,8 +174,11 @@ void Document::write(const QString &output, double width, double height)
 					str.clear();
 				}
 				font->SetFontSize(p.sh);
-				pos = p.p;
-				line = p.l;
+				if(!p.c.isSpace())
+				{
+					pos = p.p;
+					line = p.l;
+				}
 			}
 			//		else
 			{

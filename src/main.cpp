@@ -111,6 +111,8 @@ int main(int ac, char ** av)
 #ifdef WITH_BOOK_SCANNER
 			if(bs)
 				bs->TurnPage();
+sleep(5);
+			continue;
 #endif
 #ifdef WITH_CAPTURE
 			QImage image;

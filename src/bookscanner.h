@@ -35,6 +35,8 @@ public:
 
 	void TurnPage();
 	void clearSerial();
+
+	void command(QString c);
 };
 
 #endif // BOOKSCANNER_H

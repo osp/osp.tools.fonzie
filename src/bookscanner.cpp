@@ -28,6 +28,9 @@
 #include <QMap>
 #include <QDebug>
 #include <QString>
+#include <QTime>
+
+#include <unistd.h>
 
 
 BookScanner::BookScanner(const QString& sfile, int baud)
@@ -78,20 +81,45 @@ void BookScanner::clearSerial()
 	}
 }
 
+void BookScanner::command(QString c)
+{
+	serial.sync();
+	serial.write(c.toAscii().data(), c.length());
+}
+
 void BookScanner::TurnPage()
 {
+//	return;
 	if(!serial.IsOpen())
 		return;
 
+	QString servo("servo %1;\n");
+	QString turnOn("turn 1;\n");
+	QString turnOff("turn 0;\n");
+	QString vacuumOn("vacuum 1;\n");
+	QString vacuumOff("vacuum 0;\n");
+
+	command(vacuumOn);
+	usleep(500000);
+	command(turnOn);
+	usleep(2600000);
+	command(servo.arg(180));
+	command(servo.arg(10));
+	usleep(1000000);
+	command(servo.arg(180));
+	command(vacuumOff);
+	usleep(100000);
+	command(turnOff);
+	usleep(100000);
+
+
 	// serial << BS_COMMAND_TURN_1;
-	for(int i(10); i < 360; ++i)
-	{
+//	for(int i(10); i < 360; i += 10)
+//	{
+//		serial.sync();
+//		serial.write(servo.arg(i).toAscii().data(), servo.length());
+//		sleep(1);
 
-//		clearSerial();
-		QString c(BS_COMMAND_SERVO + QString::number(i) + QString("\n"));
-//		serial << BS_COMMAND_SERVO << i << std::endl;
-		serial.write(c.toAscii().data(), c.length());
-
-	}
+//	}
 
 }
