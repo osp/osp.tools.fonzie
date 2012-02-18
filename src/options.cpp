@@ -36,7 +36,19 @@ Options::Options(const QStringList& opt)
 			// special case for images
 			if(arg.at(0) == QString(OPTIMAGE))
 			{
-				images << arg.at(1);
+				if(arg.at(1).startsWith("+"))
+				{
+					QString ipat(arg.at(1).mid(1));
+					QDir dir(".");
+					QStringList globbed(dir.entryList(QStringList(ipat)));
+					for(int i(0); i < globbed.count(); ++i)
+					{
+						insert(QString(OPTIMAGE) + QString::number(i), globbed.at(i));
+//						qDebug()<<QString(OPTIMAGE) + QString::number(i)<<" => "<<globbed.at(i);
+					}
+				}
+				else
+					images << arg.at(1);
 			}
 			else
 			{

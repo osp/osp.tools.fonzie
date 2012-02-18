@@ -33,7 +33,7 @@
 #include "composer.h"
 
 
-//#define WITH_TESSERACT
+#define WITH_TESSERACT
 #ifdef WITH_TESSERACT
 #include "ocr.h"
 #endif
@@ -80,6 +80,26 @@ int main(int ac, char ** av)
 		//	double offset(opt.toDouble(OPTOFFSET));
 		//	int baseline(opt.toInt(OPTBASELINE));
 		QList<GlyphTrace*> allGlyphs;
+
+		bool doCrop(false);
+		bool isRightPage(true);
+		QRect cropRight;
+		QRect cropLeft;
+		if(opt.contains(OPTCROPPAGELEFT) && opt.contains(OPTCROPPAGERIGHT))
+		{
+			QStringList cr(opt.value(OPTCROPPAGERIGHT).split("+"));
+			if(cr.count() >= 4)
+			{
+				cropRight = QRect(cr[0].toInt(),cr[1].toInt(),cr[2].toInt(),cr[3].toInt());
+				cr = QStringList(opt.value(OPTCROPPAGELEFT).split("+"));
+				if(cr.count() >= 4)
+				{
+					cropLeft = QRect(cr[0].toInt(),cr[1].toInt(),cr[2].toInt(),cr[3].toInt());
+				}
+
+				doCrop = true;
+			}
+		}
 
 		int iCount(opt.Count(OPTIMAGE));
 #ifdef WITH_CAPTURE
@@ -133,6 +153,17 @@ sleep(5);
 #else
 			QImage image(opt.toString(QString(OPTIMAGE), ic));
 #endif
+			if(doCrop)
+			{
+				QRect cropRect;
+				if(isRightPage)
+					cropRect = cropRight;
+				else
+					cropRect = cropLeft;
+				isRightPage = !isRightPage;
+				image = image.copy(cropRect);
+			}
+
 			OCR ocr(opt.value(OPTTESSDATA));
 			bool hasXHeight(false);
 			double optXHeight;

@@ -55,5 +55,8 @@
 #define OPTCAMLEFT "cl"
 #define OPTARDUINOSERIAL "arduino"
 #define OPTARDUINOSERIALBAUDRATE "arduino_br"
+#define OPTCROPPAGELEFT "crop_left"
+#define OPTCROPPAGERIGHT "crop_right"
+#define OPTSTARTPAGE "start_page"
 
 #endif // NAMES_H
