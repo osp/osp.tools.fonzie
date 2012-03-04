@@ -180,11 +180,23 @@ void GlyphTrace::storeCurve(potrace_curve_t *c)
 	}
 }
 
-QImage GlyphTrace::toBitmap(const QImage &i, int limit)
+QImage GlyphTrace::toBitmap(const QImage &i)
 {
 	QImage r(i.size(),QImage::Format_Mono);
+	int dMax(255);
 	int h(r.height());
 	int w(r.width());
+	for(unsigned int y=0; y < h; ++y)
+	{
+		for(unsigned int x=0; x < w; ++x)
+		{
+			if(qGray(i.pixel(x,y)) < dMax)
+				dMax = qGray(i.pixel(x,y));
+
+		}
+	}
+	int limit = 255 - ((255 - dMax) / 2);
+//	qDebug()<<"limit"<<limit;
 	for(unsigned int y=0; y < h; ++y)
 	{
 		for(unsigned int x=0; x < w; ++x)

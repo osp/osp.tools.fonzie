@@ -58,7 +58,7 @@ class GlyphTrace : public QObject
 	double tx;
 	double ty;
 
-	QImage toBitmap(const QImage& i, int limit = 254 / 2);
+	QImage toBitmap(const QImage& i);
 
 public:
 	struct Options{

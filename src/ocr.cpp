@@ -38,6 +38,12 @@
 #include "tesseract/pageres.h"
 #include "tesseract/werd.h"
 
+
+QImage dbgImage0;
+int dbgW;
+int dbgH;
+double dbgScale;
+
 OCR::OCR(const QString& datadir)
 	:tesseract::TessBaseAPI()
 {
@@ -81,6 +87,10 @@ void OCR::loadImage(const QImage& img)
 	SetImage(img.constBits(), img.width(), img.height(), img.depth() /8, img.bytesPerLine());
 #endif
 	m_img = img;
+	dbgW = qMin(800, m_img.width());
+	dbgH = m_img.height() * dbgW / m_img.width();
+	dbgScale = double(dbgW) / double(m_img.width());
+	dbgImage0 = m_img.scaled(dbgW, dbgH).convertToFormat(QImage::Format_ARGB32);
 }
 
 
@@ -215,16 +225,44 @@ void OCR::saveImages(int baseline)
 				continue;
 			QPoint tl(x0[i], iHeight - y1[i]);
 			QPoint br(y0[i],  /*descDict.value(i)*/ iHeight - x1[i]);
-			QRect r(tl, br);
-			// Search the larger rect enclosing the same letter
+			QRect r/*(tl, br)*/;
+			// Search the larger (but not too much larger) rect enclosing the same letter
 			int iCount(1);
+
+			// First loop to avoid extreme sizes
+			double mws(0);
+			double mhs(0);
+			double asmples(0);
+			for(int j(i), nSamples(0); j < result && nSamples < 255; ++j)
+			{
+				QChar c2(tc.at(j));
+				if(c == c2)
+				{
+					++nSamples;
+					QPoint tl2(x0[j], iHeight - y1[j]);
+					QPoint br2(y0[j],  iHeight - x1[j]);
+					QRect r2(tl2, br2);
+
+					mws += double(r2.width());
+					mhs += double(r2.height());
+
+					asmples += 1.0;
+				}
+			}
+
+			mws /=  asmples;
+			mhs /= asmples;
+			double mhs_max = mhs * 1.1;
+			double mhs_min = mhs * 0.9;
 
 //#define DBG_EXPORT_BOXES
 #ifdef DBG_EXPORT_BOXES
-			QImage dbgImage(m_img.copy());
+
+			QImage dbgImage(dbgImage0.copy());
 			QPen pen(Qt::blue);
 			QPen bpen(Qt::red);
 			QPainter painter(&dbgImage);
+			painter.scale(dbgScale, dbgScale);
 			painter.setBrush(Qt::NoBrush);
 			painter.setPen(pen);
 #endif
@@ -245,15 +283,18 @@ void OCR::saveImages(int baseline)
 							 QPoint(r2.right(), ginfo.at(j).baseline));
 					painter.setPen(pen);
 #endif
-					if(r2.width() > r.width())
+					if(double(r2.height()) < mhs_max && double(r2.height()) > mhs_min)
 					{
-						r.setWidth(qMax(r.width(), r2.width()));
-						r.setLeft(r.left() - ((r2.width()- r.width())/2));
-					}
-					if(r2.height() > r.height())
-					{
-						r.setHeight(qMax(r.height(), r2.height()));
-						r.setTop(r.top() - ((r2.top() - r2.top())/2));
+						if(r2.width() > r.width())
+						{
+							r.setWidth(qMax(r.width(), r2.width()));
+//							r.setLeft(r.left() - ((r2.width()- r.width())/2));
+						}
+						if(r2.height() > r.height())
+						{
+							r.setHeight(qMax(r.height(), r2.height()));
+//							r.setTop(r.top() - ((r2.top() - r2.top())/2));
+						}
 					}
 					++iCount;
 				}
@@ -270,6 +311,8 @@ void OCR::saveImages(int baseline)
 			QList<double> xheights;
 			QList<int> baselines;
 
+
+
 				for(int j(i), nSamples(0); j < result && nSamples < 255; ++j)
 				{
 					QChar c2(tc.at(j));
@@ -279,23 +322,30 @@ void OCR::saveImages(int baseline)
 						QPoint tl2(x0[j], iHeight - y1[j]);
 						QPoint br2(y0[j],  iHeight - x1[j]);
 						QRect r2(tl2, br2);
-						double vScale(double(r2.height()) / double(r.height()));
-
-						baselines.append(qRound(double(ginfo.at(j).baseline - r2.bottom()) * vScale));
-						xheights.append(double(ginfo.at(j).xheight)* vScale);
-						QImage cImg(m_img.copy(r2).scaled(r.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
-						for(int y(0); y < r.height() ; ++y)
+						if(double(r2.height()) < mhs_max && double(r2.height()) > mhs_min)
 						{
-							for(int x(0); x < r.width(); ++x)
+							double vScale(double(r2.height()) / double(r.height()));
+
+							if(c == QChar('a'))
+								qDebug()<<"max:"<<mhs_max<<"min:"<<mhs_min<<"height:"<<double(r2.height())<<"rheight:"<<double(r.height());
+
+
+							baselines.append(qRound(double(ginfo.at(j).baseline - r2.bottom()) * vScale));
+							xheights.append(double(ginfo.at(j).xheight)* vScale);
+							QImage cImg(m_img.copy(r2).scaled(r.size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+							for(int y(0); y < r.height() ; ++y)
 							{
-								int refX(x);
-								int refY(y);
-								int valR2(qGray(cImg.pixel(x,y)) < 128 ? 255 / iCount : 0);
-								// int valR2((255 - qGray(cImg.pixel(x,y))) / iCount);
-								int valRef(qGray(ref.pixel(refX, refY)));
-								int newVal(qMax(0, valRef - valR2));
-								int newColor(QColor(newVal, newVal, newVal, 255).rgba());
-								ref.setPixel(refX, refY, newColor);
+								for(int x(0); x < r.width(); ++x)
+								{
+									int refX(x);
+									int refY(y);
+									int valR2(qGray(cImg.pixel(x,y)) < 128 ? 255 / iCount : 0);
+									// int valR2((255 - qGray(cImg.pixel(x,y))) / iCount);
+									int valRef(qGray(ref.pixel(refX, refY)));
+									int newVal(qMax(0, valRef - valR2));
+									int newColor(QColor(newVal, newVal, newVal, 255).rgba());
+									ref.setPixel(refX, refY, newColor);
+								}
 							}
 						}
 
