@@ -29,11 +29,14 @@
 #include "names.h"
 #include "magicmetrics.h"
 #include "ufotemplate.h"
+
+#ifdef WITH_TESSERACT
 #include "document.h"
 #include "composer.h"
+#endif
 
 
-#define WITH_TESSERACT
+// #define WITH_TESSERACT
 #ifdef WITH_TESSERACT
 #include "ocr.h"
 #endif

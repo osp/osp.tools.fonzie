@@ -72,7 +72,7 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 				BM_SET(pbm, j, (pbm->h - 1) - i);
 		}
 	}
-//	image.save(QString("%1_image.png").arg(int(this)));
+	image.save(QString("%1_image.png").arg(int(this)));
 //	bitmap.save(QString("%1_bitmap.png").arg(int(this)));
 	potrace_state_t *pState = potrace_trace(par, pbm);
 	potrace_path_t * p = pState->plist;

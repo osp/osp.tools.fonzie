@@ -1,5 +1,9 @@
 IF(TESSERACT_FOUND)
-	SET(OCR_SRC ocr.cpp)
+	SET(OCR_SRC 
+	ocr.cpp
+	composer.cpp
+	document.cpp
+    )
 	SET(OCR_LIB ${TESSERACT_LIBRARIES})
 	SET(OCR_INCLUDE ${TESSERACT_INCLUDE_DIR})
 ENDIF(TESSERACT_FOUND)
@@ -32,8 +36,7 @@ options.cpp
 gridspec.cpp
 magicmetrics.cpp
 ufotemplate.cpp
-composer.cpp
-document.cpp
+
 ${OCR_SRC}
 ${FF_SRC}
 ${CAPTURE_SRC}
