@@ -1,11 +1,18 @@
+Fonzie
+======
+
+Fonzie reads letters
+
 ** This file used to be maintained at http://osp.titanpad.com/21 **
+
+- - -
 
 ----------
 I N T R O
 ----------
 Where are the sources?
-- git clone http://git.constantvzw.org/osp.git for read-only access
-- git clone git@git.constantvzw.org:osp.git for r/w access 
+- git clone git://git.constantvzw.org/osp.tools.fonzie.git for read-only access
+- git clone git@git.constantvzw.org:osp.tools.fonzie.git for r/w access 
 (you need to first sent a public ssh key to Denis, Alex, Femke or Prince to actually be granted)
 
 Dans le dossier source, il y a les dossiers :
@@ -81,10 +88,10 @@ P L A Y
 cloner le git
 
 -pour les osp
-git clone git@git.constantvzw.org:osp.git
+git clone git@git.constantvzw.org:osp.tools.fonzie.git
 
 -pour le "public"
-git clone http://git.constantvzw.org/osp.git
+git clone git://git.constantvzw.org/osp.tools.fonzie.git
 
 - copier Fonzie dans son dossier source
 cd src
