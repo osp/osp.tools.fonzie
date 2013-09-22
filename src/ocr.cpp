@@ -35,8 +35,11 @@
 #include <cmath>
 #include <locale.h>
 
-#include "tesseract/pageres.h"
-#include "tesseract/werd.h"
+#include "tesseract/baseapi.h"
+#include "tesseract/resultiterator.h"
+
+//#include "tesseract/pageres.h"
+//#include "tesseract/werd.h"
 
 
 QImage dbgImage0;
