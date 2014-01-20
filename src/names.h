@@ -48,6 +48,7 @@
 // TESSERACT
 #define OPTTESSDATA "tessdata"
 #define OPTBASELINE "bl"
+#define OPTTXT	"txt"
 
 // BOOK SCANNER
 #define OPTCAPTURE "capture"

@@ -46,6 +46,7 @@
 #include <QMap>
 #include <QFile>
 #include <QDir>
+#include <QString>
 
 //#define WITH_CAPTURE
 #ifdef WITH_CAPTURE
@@ -265,6 +266,19 @@ sleep(5);
 			fu->ClearWC();
 		delete fu;
 		delete mm;
+
+
+        if(opt.contains(OPTTXT))
+        {
+            QFile file(opt.toString(OPTTXT));
+            if (file.open(QIODevice::WriteOnly | QIODevice::Text | QIODevice::Truncate))
+            {
+                QString txt(Composer::GetText());
+                file.write(txt.toUtf8());
+                file.close();
+            }
+        }
+
 #ifdef WITH_CAPTURE
 		if(hasORM)
 			delete orm;

@@ -33,8 +33,10 @@
 #define DEFAULTXADVANCE 1000.0
 #define MINIMUMIMAGEAREA 10000.0
 
+
 GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 {
+        static int img_ctr = 0;
 	double iHeight(image.height());
 	double iWidth(image.width());
 	if(iHeight * iWidth > MINIMUMIMAGEAREA)
@@ -72,7 +74,7 @@ GlyphTrace::GlyphTrace(QImage image, const Options& opt)
 				BM_SET(pbm, j, (pbm->h - 1) - i);
 		}
 	}
-//	image.save(QString("%1_image.png").arg(int(this)));
+	image.save(QString("%1_image.png").arg(int(img_ctr++)));
 //	bitmap.save(QString("%1_bitmap.png").arg(int(this)));
 	potrace_state_t *pState = potrace_trace(par, pbm);
 	potrace_path_t * p = pState->plist;

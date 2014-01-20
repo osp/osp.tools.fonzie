@@ -58,6 +58,7 @@ public:
 	static int NewPage();
 	static void Add(QChar ccode, QPointF pos, double sizeHint, unsigned int line);
 	static const QList<PosList>& GetList();
+    static QString GetText();
 
 private:
 	QList<PosList> pl;

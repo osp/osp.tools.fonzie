@@ -20,6 +20,8 @@
 
 #include "composer.h"
 
+#include <QString>
+
 Composer* Composer::instance = 0;
 Composer::Composer()
 {
@@ -51,3 +53,17 @@ const QList<Composer::PosList>& Composer::GetList()
 	return that()->pl;
 }
 
+
+QString Composer::GetText()
+{
+    QList<Composer::PosList>& pl = that()->pl;
+    QString ret;
+    foreach(const Composer::PosList& l, pl)
+    {
+        foreach(const Composer::Pos& p, l)
+        {
+            ret.append(p.c);
+        }
+    }
+    return ret;
+}
